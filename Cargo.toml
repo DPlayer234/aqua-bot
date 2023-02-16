@@ -1,0 +1,10 @@
+[workspace]
+members = [
+    "aqua_app",
+    "aqua_commands",
+    "aqua_util"
+]
+
+[profile.release]
+lto = true
+panic = 'abort'

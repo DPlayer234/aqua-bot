@@ -1,0 +1,11 @@
+[package]
+name = "aqua_commands"
+version = "1.0.0"
+edition = "2021"
+
+[dependencies]
+rand = "0.8.5"
+chrono = "0.4.23"
+serenity = { version = "0.11.5", features = ["cache", "framework", "standard_framework"] }
+tokio = { version = "1.25.0", features = ["macros", "rt-multi-thread"] }
+aqua_util = { path = "../aqua_util" }
