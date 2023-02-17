@@ -1,6 +1,5 @@
-use crate::imports::*;
-use aqua_util::time::{TimestampFormat, SHORT_DATE_TIME};
-use aqua_util::DEFAULT_EMBED_COLOR;
+use crate::internal::prelude::*;
+use aqua_util::time::{TimestampMention, SHORT_DATE_TIME};
 
 #[command]
 #[num_args(1)]
@@ -14,6 +13,8 @@ pub async fn who(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult 
 	}
 }
 
+/* Grab the user/member by their ID, then delegate to further methods below */
+
 async fn who_user_by_id(ctx: &Context, msg: &Message, user_id: UserId) -> CommandResult {
 	let user = user_id.to_user(&ctx).await?;
 	who_user(&ctx, &msg, user).await
@@ -21,9 +22,11 @@ async fn who_user_by_id(ctx: &Context, msg: &Message, user_id: UserId) -> Comman
 
 async fn who_member_by_id(ctx: &Context, msg: &Message, guild_id: GuildId, user_id: UserId) -> CommandResult {
 	match guild_id.member(&ctx, user_id).await {
+		// If we found the member, no problem!
 		Ok(member)
 			=> who_member(&ctx, &msg, member).await,
 
+		// Specifically retry if the error we got was a NOT_FOUND HTTP error
 		Err(Error::Http(ref box_err))
 		if box_err.status_code() == Some(StatusCode::NOT_FOUND)
 			=> who_user_by_id(&ctx, &msg, user_id).await,
@@ -31,6 +34,8 @@ async fn who_member_by_id(ctx: &Context, msg: &Message, guild_id: GuildId, user_
 		Err(err) => Err(Box::new(err))
 	}
 }
+
+/* Send an embed based on a grabbed user/member */
 
 async fn who_user(ctx: &Context, msg: &Message, user: User) -> CommandResult {
 	msg.channel_id.send_message(&ctx.http, |m| m
@@ -44,17 +49,19 @@ async fn who_member(ctx: &Context, msg: &Message, member: Member) -> CommandResu
 	Ok(())
 }
 
+/* Format the embeds */
+
 fn who_user_embed<'a>(user: &User, embed: &'a mut CreateEmbed) -> &'a mut CreateEmbed {
 	set_user_info(user, embed);
 
-	embed.color(DEFAULT_EMBED_COLOR)
+	embed.color(aqua_util::DEFAULT_EMBED_COLOR)
 }
 
 fn who_member_embed<'a>(ctx: &Context, member: &Member, embed: &'a mut CreateEmbed) -> &'a mut CreateEmbed {
 	set_user_info(&member.user, embed);
 	set_member_info(&member, embed);
 
-	embed.color(member.colour(&ctx).unwrap_or(DEFAULT_EMBED_COLOR))
+	embed.color(member.colour(&ctx).unwrap_or(aqua_util::DEFAULT_EMBED_COLOR))
 }
 
 fn set_user_info(user: &User, embed: &mut CreateEmbed) {

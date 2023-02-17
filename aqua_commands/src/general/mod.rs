@@ -1,10 +1,12 @@
-use crate::imports::*;
+use crate::internal::prelude::*;
 mod who;
 mod hi;
+mod what;
 
 use who::*;
 use hi::*;
+use what::*;
 
 #[group]
-#[commands(who, hi)]
+#[commands(hi, who, what)]
 pub struct General;

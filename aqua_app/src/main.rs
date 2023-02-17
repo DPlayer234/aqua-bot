@@ -1,13 +1,12 @@
 use std::env;
+
 use aqua_commands::StandardFrameworkExt;
-use aqua_util::time::mark_startup_time;
-use serenity::async_trait;
 use serenity::model::prelude::*;
 use serenity::prelude::*;
 
 struct Handler;
 
-#[async_trait]
+#[serenity::async_trait]
 impl EventHandler for Handler {
 	async fn ready(&self, _: Context, ready: Ready) {
 		println!("{} is connected!", ready.user.name);
@@ -47,7 +46,7 @@ async fn main() {
 		.await
 		.expect("Error creating client.");
 
-	mark_startup_time();
+	aqua_util::time::mark_startup_time();
 
 	if let Err(reason) = builder.start().await {
 		println!("Client Error: {:?}", reason);

@@ -1,6 +1,5 @@
-use crate::imports::*;
+use crate::internal::prelude::*;
 use aqua_util::time::get_startup_time;
-use aqua_util::{DEFAULT_EMBED_COLOR, COPYRIGHT_FOOTER};
 use chrono::prelude::*;
 
 #[command]
@@ -19,7 +18,7 @@ pub async fn hi(ctx: &Context, msg: &Message, _: Args) -> CommandResult {
 				.push(' ')
 				.push_line(
 					format!(
-						"{}.{:02}:{:02}:{:02},{:03}",
+						"{}.{:02}:{:02}:{:02}.{:03}",
 						uptime.num_days(),
 						uptime.num_hours() % 24,
 						uptime.num_minutes() % 60,
@@ -32,20 +31,20 @@ pub async fn hi(ctx: &Context, msg: &Message, _: Args) -> CommandResult {
 				.push(' ')
 				.push(now.format("%a, %d/%m/%Y %H:%M:%S"))
 				.push_line(" UTC+0")
-
-				.push_bold("Guilds:")
-				.push(' ')
-				.push_line(ctx.cache.guild_count())
 				
 				.push_bold("Shard:")
 				.push(" ID ")
 				.push_line(ctx.shard_id)
+
+				.push_bold("Guilds:")
+				.push(' ')
+				.push_line(ctx.cache.guild_count())
 			)
 			.footer(|f| f
-				.text(COPYRIGHT_FOOTER)
+				.text(aqua_util::COPYRIGHT_FOOTER)
 			)
 			.thumbnail(current_user.face())
-			.color(DEFAULT_EMBED_COLOR)
+			.color(aqua_util::DEFAULT_EMBED_COLOR)
 		)
 	).await?;
 	Ok(())

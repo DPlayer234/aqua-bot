@@ -8,3 +8,5 @@ pub use serenity::model::prelude::*;
 pub use serenity::prelude::*;
 pub use serenity::utils::{MessageBuilder, EmbedMessageBuilding};
 pub use serenity::utils;
+
+pub use aqua_util::DEFAULT_EMBED_COLOR;

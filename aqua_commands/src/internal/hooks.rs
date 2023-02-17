@@ -1,8 +1,7 @@
 use std::num::{ParseIntError, ParseFloatError};
 
-use crate::imports::*;
-use serenity::Error;
-use serenity::framework::standard::{CommandResult, ArgError};
+use crate::internal::prelude::*;
+use serenity::framework::standard::ArgError;
 use serenity::framework::standard::DispatchError::{self, *};
 use serenity::framework::standard::macros::hook;
 use aqua_util::ERROR_EMBED_COLOR;

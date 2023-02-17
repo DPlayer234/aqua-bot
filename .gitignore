@@ -1,3 +1,8 @@
 /.cargo
+
+# We absolutely do not want to include
+# .vscode since it contains credentials
 /.vscode
+
+# Don't include the build output
 /target
