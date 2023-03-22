@@ -49,6 +49,6 @@ async fn main() {
 	aqua_util::time::mark_startup_time();
 
 	if let Err(reason) = builder.start().await {
-		println!("Client Error: {:?}", reason);
+		println!("Client Error: {reason:?}");
 	}
 }

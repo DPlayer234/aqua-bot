@@ -1,5 +1,5 @@
 //! Provides the commands to be used by the bot.
-//! Allows a one-method setup with the [StandardFramework].
+//! Allows a one-method setup with the [`StandardFramework`].
 //! Nothing else is exported.
 //! 
 //! Generally, each folder here corresponds to a command group.
@@ -13,9 +13,10 @@ mod internal;
 
 use internal::hooks;
 
-/// An extension for [StandardFramework] to allow the setup.
+/// An extension for [`StandardFramework`] to allow the setup.
 pub trait StandardFrameworkExt {
 	/// Configures the `aqua_commands` on this framework instance.
+	#[must_use]
 	fn configure_aqua_commands(self) -> Self;
 }
 

@@ -7,28 +7,28 @@ use aqua_util::ERROR_EMBED_COLOR;
 #[max_args(1)]
 pub async fn what(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
 	match args.single::<ChannelId>() {
-		Ok(id) => what_some(&ctx, &msg, id).await,
-		Err(ArgError::Eos) => what_here(&ctx, &msg).await,
+		Ok(id) => what_some(ctx, msg, id).await,
+		Err(ArgError::Eos) => what_here(ctx, msg).await,
 		Err(err) => Err(Box::new(err)) 
 	}
 }
 
 async fn what_here(ctx: &Context, msg: &Message) -> CommandResult {
-	what_some(&ctx, &msg, msg.channel_id).await
+	what_some(ctx, msg, msg.channel_id).await
 }
 
 async fn what_some(ctx: &Context, msg: &Message, id: ChannelId) -> CommandResult {
 	if let Ok(channel) = id.to_channel(&ctx).await {
-		what_channel(&ctx, &msg, channel).await
+		what_channel(ctx, msg, channel).await
 	} else {
-		what_other(&ctx, &msg, id).await
+		what_other(ctx, msg, id).await
 	}
 }
 
 async fn what_channel(ctx: &Context, msg: &Message, channel: Channel) -> CommandResult {
 	let guild = match channel {
-		Channel::Guild(ref guild_channel) => guild_channel.guild(&ctx),
-		Channel::Category(ref category_channel) => category_channel.guild_id.to_guild_cached(&ctx),
+		Channel::Guild(ref guild_channel) => guild_channel.guild(ctx),
+		Channel::Category(ref category_channel) => category_channel.guild_id.to_guild_cached(ctx),
 		_ => None,
 	};
 
@@ -176,7 +176,7 @@ fn set_channel_info(channel: &Channel, embed: &mut CreateEmbed) {
 	embed.field(name, builder.build(), false);
 }
 
-fn other_info_embed<'a>(id: ChannelId, embed: &'a mut CreateEmbed) -> &'a mut CreateEmbed {
+fn other_info_embed(id: ChannelId, embed: &mut CreateEmbed) -> &mut CreateEmbed {
 	embed
 		.description(MessageBuilder::new()
 			.push_bold("Snowflake:")

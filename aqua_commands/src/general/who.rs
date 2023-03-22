@@ -7,9 +7,9 @@ pub async fn who(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult 
 	let user_id: UserId = args.single()?;
 
 	if let Some(guild_id) = msg.guild_id {
-		who_member_by_id(&ctx, &msg, guild_id, user_id).await
+		who_member_by_id(ctx, msg, guild_id, user_id).await
 	} else {
-		who_user_by_id(&ctx, &msg, user_id).await
+		who_user_by_id(ctx, msg, user_id).await
 	}
 }
 
@@ -17,19 +17,19 @@ pub async fn who(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult 
 
 async fn who_user_by_id(ctx: &Context, msg: &Message, user_id: UserId) -> CommandResult {
 	let user = user_id.to_user(&ctx).await?;
-	who_user(&ctx, &msg, user).await
+	who_user(ctx, msg, user).await
 }
 
 async fn who_member_by_id(ctx: &Context, msg: &Message, guild_id: GuildId, user_id: UserId) -> CommandResult {
 	match guild_id.member(&ctx, user_id).await {
 		// If we found the member, no problem!
 		Ok(member)
-			=> who_member(&ctx, &msg, member).await,
+			=> who_member(ctx, msg, member).await,
 
 		// Specifically retry if the error we got was a NOT_FOUND HTTP error
 		Err(Error::Http(ref box_err))
 		if box_err.status_code() == Some(StatusCode::NOT_FOUND)
-			=> who_user_by_id(&ctx, &msg, user_id).await,
+			=> who_user_by_id(ctx, msg, user_id).await,
 
 		Err(err) => Err(Box::new(err))
 	}
@@ -45,7 +45,7 @@ async fn who_user(ctx: &Context, msg: &Message, user: User) -> CommandResult {
 
 async fn who_member(ctx: &Context, msg: &Message, member: Member) -> CommandResult {
 	msg.channel_id.send_message(&ctx.http, |m| m
-		.embed(|e| who_member_embed(&ctx, &member, e))).await?;
+		.embed(|e| who_member_embed(ctx, &member, e))).await?;
 	Ok(())
 }
 
@@ -59,9 +59,9 @@ fn who_user_embed<'a>(user: &User, embed: &'a mut CreateEmbed) -> &'a mut Create
 
 fn who_member_embed<'a>(ctx: &Context, member: &Member, embed: &'a mut CreateEmbed) -> &'a mut CreateEmbed {
 	set_user_info(&member.user, embed);
-	set_member_info(&member, embed);
+	set_member_info(member, embed);
 
-	embed.color(member.colour(&ctx).unwrap_or(aqua_util::DEFAULT_EMBED_COLOR))
+	embed.color(member.colour(ctx).unwrap_or(aqua_util::DEFAULT_EMBED_COLOR))
 }
 
 fn set_user_info(user: &User, embed: &mut CreateEmbed) {
@@ -93,7 +93,7 @@ fn set_user_info(user: &User, embed: &mut CreateEmbed) {
 			.push_line(accent_color.hex());
 	}
 
-	if let Some(public_flags) = user.public_flags.map(to_string_public_flags).flatten() {
+	if let Some(public_flags) = user.public_flags.and_then(to_string_public_flags) {
 		builder.push_bold("Public Flags:")
 			.push(' ')
 			.push_mono_line(public_flags);
